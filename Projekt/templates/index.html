@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BookMatch</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #FFF0F5, #E6E6FA);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #4A2F3A;
+        }
+        h1, h2, h3 {
+            color: #4A2F3A;
+            font-family: 'Georgia', serif;
+            font-weight: normal;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 10px 0;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 250px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .step {
+            margin-bottom: 20px;
+            background-color: #FFF5F7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        .full-width {
+            width: 100%;
+        }
+        .half-width {
+            width: 48%;
+        }
+        .motif-section {
+            width: 48%;
+            margin-left: 2%;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+            color: #4A2F3A;
+            font-size: 0.95em;
+        }
+        input, select {
+            width: 100%;
+            max-width: 300px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #FADADD;
+            border-radius: 5px;
+            background-color: #FFF9F9;
+            font-family: 'Georgia', serif;
+            transition: border-color 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #E8A7B1;
+            outline: none;
+        }
+        button, a.button {
+            padding: 10px 20px;
+            background-color: #FADADD;
+            color: #4A2F3A;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-family: 'Georgia', serif;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        button:hover, a.button:hover {
+            background-color: #E8A7B1;
+            transform: scale(1.05);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #FFF5F7;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #FADADD;
+        }
+        th {
+            background-color: #FADADD;
+            color: #4A2F3A;
+        }
+        tr:hover {
+            background-color: #FFF9F9;
+        }
+        .description {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #FFF9F9;
+            border-radius: 5px;
+            color: #4A2F3A;
+            white-space: pre-wrap;
+        }
+        .error-message {
+            color: #A01414;
+            font-style: italic;
+        }
+        .quote-container {
+            margin-bottom: 20px;
+            text-align: center;
+            background-color: #FFF9F9;
+            padding: 15px;
+            border: 1px solid #FADADD;
+            border-radius: 10px;
+            color: #4A2F3A;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+        .similar-books-section {
+            display: none;
+            margin-top: 20px;
+        }
+        .book-selection-section {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://cdn.discordapp.com/attachments/1217528640850497636/1361754114379481381/c75c4644-3840-4fde-ae74-70f514a32631.png?ex=67ffe7d9&is=67fe9659&hm=0afde6b136f6e66d27639556b33e675d95a73795bde289134d7096a8af38fa36&" alt="BookMatch Logo" class="logo">
+    <h1>BookMatch</h1>
+
+    <div class="container">
+        <!-- Krok 1: Cytat dnia -->
+        <div class="step full-width quote-container" id="step1">
+            <h2>Cytat dnia</h2>
+            <p id="quote"></p>
+        </div>
+
+        <!-- Krok 2: Dopasuj książkę -->
+        <div class="step full-width" id="step2">
+            <h2>Dopasuj książkę po tytule/motywach</h2>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="width: 48%;">
+                    <label for="fragmentTytulu">Podaj fragment tytułu książki:</label>
+                    <input type="text" id="fragmentTytulu" placeholder="Np. Harry Potter">
+                    <button onclick="searchBooks()">Szukaj</button>
+                    <div class="book-selection-section" id="booksList">
+                        <select id="bookSelect">
+                            <option value="">Wybierz książkę...</option>
+                        </select>
+                        <button onclick="selectBook()">Wybierz</button>
+                    </div>
+                </div>
+                <div class="motif-section" id="motifSection" style="display: none;">
+                    <h3>Wybierz motyw</h3>
+                    <select id="motifSelect">
+                        <option value="">Wybierz motyw...</option>
+                    </select>
+                    <button onclick="selectMotif()">Wybierz motyw</button>
+                    <div id="motifDescription" class="description"></div>
+                    <div class="similar-books-section" id="similarBooksSection">
+                        <h3>Podobne książki</h3>
+                        <table id="similarBooksTable">
+                            <thead>
+                                <tr>
+                                    <th>Tytuł</th>
+                                    <th>Autor</th>
+                                    <th>Wiek</th>
+                                    <th>Wydawnictwo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="similarBooksOutput"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Krok 3: Dodaj książkę -->
+        <div class="step half-width" id="step3">
+            <h2>Nie znalazłeś swojej książki? Dodaj ją tutaj</h2>
+            <label for="newBookTitle">Tytuł:</label>
+            <input type="text" id="newBookTitle" placeholder="Tytuł książki">
+            <label for="newBookAuthor">Autor:</label>
+            <input type="text" id="newBookAuthor" placeholder="Autor">
+            <label for="newBookAge">Wiek:</label>
+            <input type="text" id="newBookAge" placeholder="Np. 12+">
+            <label for="newBookPublisher">Wydawnictwo:</label>
+            <input type="text" id="newBookPublisher" placeholder="Wydawnictwo">
+            <label for="newBookMotifs">Motywy (oddzielone przecinkami):</label>
+            <input type="text" id="newBookMotifs" placeholder="Np. magia, przyjaźń">
+            <button onclick="addBook()">Dodaj książkę</button>
+            <div id="addBookMessage"></div>
+        </div>
+
+        <!-- Krok 4: Stwórz historie -->
+        <div class="step half-width" id="step4">
+            <h2>Stwórz historie</h2>
+            <a href="/create_story.html" class="button">Przejdź do tworzenia historii</a>
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            { text: "Czytanie to podróż, która nigdy się nie kończy." },
+            { text: "Książka to przyjaciel, który nigdy nie zdradzi." },
+            { text: "W książkach znajdziesz cały świat." },
+            { text: "Jedna książka może zmienić całe życie." },
+            { text: "Czytanie otwiera drzwi do nowych światów." },
+            { text: "Każda książka to nowa przygoda czekająca na odkrycie." },
+            { text: "W książkach kryje się magia, którą możesz ożywić." },
+            { text: "Czytanie to sposób na życie wielu żyć naraz." },
+            { text: "Książki są lustrem duszy i oknem na świat." },
+            { text: "Słowa w książkach mają moc budowania nowych światów." },
+            { text: "Czytanie to wolność, którą nosisz w sercu." },
+            { text: "Książka jest jak mapa – prowadzi cię tam, gdzie chcesz być." },
+            { text: "W każdej książce znajdziesz cząstkę siebie." },
+            { text: "Czytanie to rozmowa z umysłami, które żyły przed nami." },
+            { text: "Otwórz książkę, a otworzysz drzwi do nieskończoności." }
+        ];
+
+        function displayQuoteOfTheDay() {
+            const today = new Date().toISOString().split('T')[0];
+            const seed = today.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+            const quoteIndex = seed % quotes.length;
+            const selectedQuote = quotes[quoteIndex];
+            document.getElementById("quote").innerHTML = `"${selectedQuote.text}"`;
+        }
+
+        displayQuoteOfTheDay();
+
+        let currentBooks = [];
+
+        function initializeApp() {
+            const storedBooks = localStorage.getItem('currentBooks');
+            const booksList = document.getElementById("booksList");
+            const bookSelect = document.getElementById("bookSelect");
+            if (storedBooks) {
+                currentBooks = JSON.parse(storedBooks);
+                bookSelect.innerHTML = '<option value="">Wybierz książkę...</option>';
+                currentBooks.forEach(book => {
+                    const option = document.createElement('option');
+                    option.value = book.index;
+                    option.textContent = `${book.title} (${book.author})`;
+                    bookSelect.appendChild(option);
+                });
+                booksList.style.display = 'block';
+            } else {
+                currentBooks = [];
+                booksList.style.display = 'none';
+                document.getElementById("motifSection").style.display = 'none';
+                document.getElementById("similarBooksSection").style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        async function searchBooks() {
+            const fragmentTytulu = document.getElementById("fragmentTytulu").value;
+            const booksList = document.getElementById("booksList");
+            const bookSelect = document.getElementById("bookSelect");
+            const motifSection = document.getElementById("motifSection");
+            const similarBooksSection = document.getElementById("similarBooksSection");
+
+            if (!fragmentTytulu) {
+                alert("Proszę wpisać fragment tytułu.");
+                booksList.style.display = 'none';
+                return;
+            }
+
+            motifSection.style.display = 'none';
+            similarBooksSection.style.display = 'none';
+
+            const response = await fetch('/search_books', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fragment_tytulu: fragmentTytulu })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                currentBooks = data.books;
+                bookSelect.innerHTML = '<option value="">Wybierz książkę...</option>';
+                currentBooks.forEach(book => {
+                    const option = document.createElement('option');
+                    option.value = book.index;
+                    option.textContent = `${book.title} (${book.author})`;
+                    bookSelect.appendChild(option);
+                });
+                booksList.style.display = 'block';
+                localStorage.setItem('currentBooks', JSON.stringify(currentBooks));
+            } else {
+                alert(data.error || 'Błąd podczas wyszukiwania książek.');
+                booksList.style.display = 'none';
+            }
+        }
+
+        async function selectBook() {
+            const bookIndex = document.getElementById("bookSelect").value;
+            const motifSection = document.getElementById("motifSection");
+            const motifSelect = document.getElementById("motifSelect");
+            const similarBooksSection = document.getElementById("similarBooksSection");
+
+            if (!bookIndex) {
+                alert("Proszę wybrać książkę.");
+                return;
+            }
+
+            if (!currentBooks || currentBooks.length === 0) {
+                alert("Brak książek do wyboru. Wyszukaj książkę ponownie.");
+                return;
+            }
+
+            motifSection.style.display = 'none';
+            similarBooksSection.style.display = 'none';
+
+            const selectedBook = currentBooks.find(book => book.index == bookIndex);
+            if (!selectedBook) {
+                alert("Wybrana książka nie istnieje.");
+                return;
+            }
+
+            motifSelect.innerHTML = '<option value="">Wybierz motyw...</option>';
+            selectedBook.motifs.forEach((motif, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = motif;
+                motifSelect.appendChild(option);
+            });
+            motifSection.style.display = 'block';
+            document.getElementById("motifDescription").textContent = '';
+            document.getElementById("similarBooksOutput").innerHTML = '';
+        }
+
+        async function selectMotif() {
+            const bookIndex = document.getElementById("bookSelect").value;
+            const motifIndex = document.getElementById("motifSelect").value;
+            const motifDescription = document.getElementById("motifDescription");
+            const similarBooksSection = document.getElementById("similarBooksSection");
+            const similarBooksOutput = document.getElementById("similarBooksOutput");
+
+            if (!bookIndex) {
+                alert("Proszę najpierw wybrać książkę.");
+                return;
+            }
+
+            if (motifIndex === "") {
+                alert("Proszę wybrać motyw.");
+                return;
+            }
+
+            const response = await fetch('/select_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ book_index: bookIndex, motif_index: motifIndex })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                motifDescription.textContent = `Motyw: ${data.selected_motif}\n\n${data.motif_description}`;
+                similarBooksOutput.innerHTML = '';
+                similarBooksSection.style.display = 'block';
+                if (data.similar_books && data.similar_books.length > 0) {
+                    data.similar_books.forEach(book => {
+                        const row = `
+                            <tr>
+                                <td>${book.title}</td>
+                                <td>${book.author}</td>
+                                <td>${book.age}</td>
+                                <td>${book.publisher}</td>
+                            </tr>
+                        `;
+                        similarBooksOutput.innerHTML += row;
+                    });
+                } else {
+                    similarBooksOutput.innerHTML = '<tr><td colspan="4">Brak podobnych książek.</td></tr>';
+                }
+            } else {
+                alert(data.error || 'Błąd podczas wybierania motywu.');
+            }
+        }
+
+        async function addBook() {
+            const title = document.getElementById("newBookTitle").value;
+            const author = document.getElementById("newBookAuthor").value;
+            const age = document.getElementById("newBookAge").value;
+            const publisher = document.getElementById("newBookPublisher").value;
+            const motifs = document.getElementById("newBookMotifs").value;
+
+            if (!title || !author || !age || !publisher || !motifs) {
+                document.getElementById("addBookMessage").innerHTML = '<p class="error-message">Proszę wypełnić wszystkie pola.</p>';
+                return;
+            }
+
+            const response = await fetch('/add_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    author: author,
+                    age: age,
+                    publisher: publisher,
+                    motifs: motifs
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById("addBookMessage").innerHTML = '<p>Książka została dodana!</p>';
+                document.getElementById("newBookTitle").value = '';
+                document.getElementById("newBookAuthor").value = '';
+                document.getElementById("newBookAge").value = '';
+                document.getElementById("newBookPublisher").value = '';
+                document.getElementById("newBookMotifs").value = '';
+
+                currentBooks = data.books;
+                const bookSelect = document.getElementById("bookSelect");
+                bookSelect.innerHTML = '<option value="">Wybierz książkę...</option>';
+                currentBooks.forEach(book => {
+                    const option = document.createElement('option');
+                    option.value = book.index;
+                    option.textContent = `${book.title} (${book.author})`;
+                    bookSelect.appendChild(option);
+                });
+                document.getElementById("booksList").style.display = 'block';
+                localStorage.setItem('currentBooks', JSON.stringify(currentBooks));
+            } else {
+                document.getElementById("addBookMessage").innerHTML = `<p class="error-message">${data.error}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

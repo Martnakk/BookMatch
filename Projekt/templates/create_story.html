@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stwórz Historię - BookMatch</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to bottom right, #FFF0F5, #E6E6FA);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #4A2F3A;
+        }
+        h1, h2 {
+            color: #4A2F3A;
+            font-family: 'Georgia', serif;
+            font-weight: normal;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 250px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .step {
+            margin-bottom: 20px;
+            background-color: #FFF5F7;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+            color: #4A2F3A;
+            font-size: 0.95em;
+        }
+        input, select, textarea {
+            width: 100%;
+            max-width: 300px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #FADADD;
+            border-radius: 5px;
+            background-color: #FFF9F9;
+            font-family: 'Georgia', serif;
+            transition: border-color 0.3s ease;
+        }
+        textarea {
+            max-width: 500px;
+            height: 100px;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #E8A7B1;
+            outline: none;
+        }
+        button, a.button {
+            padding: 10px 20px;
+            background-color: #FADADD;
+            color: #4A2F3A;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button:hover, a.button:hover {
+            background-color: #E8A7B1;
+            transform: scale(1.05);
+        }
+        .story-output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFF9F9;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            width: 100%;
+            max-width: 800px;
+            min-height: 200px;
+            overflow-y: auto;
+            position: relative;
+        }
+        .story-output.minimized {
+            height: 40px;
+            overflow: hidden;
+            min-height: unset;
+        }
+        .toggle-story-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #FADADD;
+            color: #4A2F3A;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            font-size: 0.9em;
+        }
+        .toggle-story-btn:hover {
+            background-color: #E8A7B1;
+        }
+        .archive-section {
+            margin-top: 20px;
+            width: 100%;
+        }
+        .archive-section table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #FFF5F7;
+        }
+        .archive-section th, .archive-section td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #FADADD;
+        }
+        .archive-section th {
+            background-color: #FADADD;
+            color: #4A2F3A;
+        }
+        .archive-section tr:hover {
+            background-color: #FFF9F9;
+        }
+        .error-message {
+            color: #A01414;
+            font-style: italic;
+        }
+        #loadingBar {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            height: 20px;
+            background-color: #FFF9F9;
+            border: 1px solid #FADADD;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        #loadingProgress {
+            width: 0;
+            height: 100%;
+            background-color: #E8A7B1;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://cdn.discordapp.com/attachments/1217528640850497636/1361754114379481381/c75c4644-3840-4fde-ae74-70f514a32631.png?ex=67ffe7d9&is=67fe9659&hm=0afde6b136f6e66d27639556b33e675d95a73795bde289134d7096a8af38fa36&" alt="BookMatch Logo" class="logo">
+    <h1>Stwórz swoją historię</h1>
+    <a href="/index.html" class="button">Powrót do strony głównej</a>
+
+    <div class="container">
+        <div class="step">
+            <h2>Wypełnij formularz</h2>
+            <label for="age">Wiek odbiorców:</label>
+            <select id="age">
+                <option value="12+">12+</option>
+                <option value="14+">14+</option>
+                <option value="15+">15+</option>
+                <option value="16+">16+</option>
+                <option value="18+">18+</option>
+            </select>
+
+            <label for="hero1_age">Wiek pierwszego bohatera:</label>
+            <input type="number" id="hero1_age" placeholder="Np. 20">
+
+            <label for="hero2_age">Wiek drugiego bohatera:</label>
+            <input type="number" id="hero2_age" placeholder="Np. 25">
+
+            <label for="erotic_level">Poziom erotyzmu:</label>
+            <select id="erotic_level">
+                <option value="1">Brak (1)</option>
+                <option value="2">Subtelny (2)</option>
+                <option value="3">Umiarkowany (3)</option>
+                <option value="4">Wyraźny (4)</option>
+                <option value="5">Intensywny (5)</option>
+            </select>
+
+            <label for="setting">Ustawienie:</label>
+            <select id="setting">
+                <option value="Polska">Polska</option>
+                <option value="Zagranica">Zagranica</option>
+                <option value="Świat fantasy">Świat fantasy</option>
+            </select>
+
+            <label for="specific_location">Konkretna lokalizacja (opcjonalne):</label>
+            <input type="text" id="specific_location" placeholder="Np. Warszawa">
+
+            <label for="genre">Gatunek:</label>
+            <select id="genre">
+                <option value="Fantasy">Fantasy</option>
+                <option value="Romans">Romans</option>
+                <option value="Thriller">Thriller</option>
+                <option value="Science fiction">Science fiction</option>
+                <option value="Przygoda">Przygoda</option>
+            </select>
+
+            <label for="narration">Narracja:</label>
+            <select id="narration">
+                <option value="1 osoba on">1 osoba (on)</option>
+                <option value="1 osoba ona">1 osoba (ona)</option>
+                <option value="3 osoba">3 osoba</option>
+                <option value="Rotacyjna">Rotacyjna</option>
+                <option value="Dziennik lub list">Dziennik lub list</option>
+            </select>
+
+            <label for="mood">Nastrój:</label>
+            <select id="mood">
+                <option value="Tajemniczy">Tajemniczy</option>
+                <option value="Romantyczny">Romantyczny</option>
+                <option value="Przygodowy">Przygodowy</option>
+                <option value="Mroczny">Mroczny</option>
+                <option value="Wesoły">Wesoły</option>
+            </select>
+
+            <label for="main_goal">Główny cel fabuły (opcjonalne):</label>
+            <input type="text" id="main_goal" placeholder="Np. odnalezienie skarbu">
+
+            <label for="focus">Fokus opowieści:</label>
+            <select id="focus">
+                <option value="Opisy">Opisy</option>
+                <option value="Dialogi">Dialogi</option>
+                <option value="Wydarzenia">Wydarzenia</option>
+                <option value="Emocje">Emocje</option>
+                <option value="Relacje">Relacje</option>
+            </select>
+
+            <label for="motifs">Motywy (minimum 3, oddzielone przecinkami):</label>
+            <input type="text" id="motifs" placeholder="Np. magia, przyjaźń, tajemnica">
+
+            <button onclick="generateStory()">Generuj historię</button>
+
+            <div id="loadingBar">
+                <div id="loadingProgress"></div>
+            </div>
+
+            <div id="storyOutput" class="story-output">
+                <button class="toggle-story-btn" onclick="toggleStory()">Zwiń</button>
+                <button class="toggle-story-btn hide-story-btn" onclick="hideStory()" style="right: 80px;">Ukryj</button>
+            </div>
+
+            <div id="chapterSection" style="display: none;">
+                <label for="chapter_pages">Liczba stron rozdziału:</label>
+                <input type="number" id="chapter_pages" min="1" value="1">
+                <button onclick="generateChapter()">Generuj kolejny rozdział</button>
+            </div>
+        </div>
+
+        <div class="archive-section">
+            <h2>Archiwum historii</h2>
+            <table id="archiveTable">
+                <thead>
+                    <tr>
+                        <th>Tytuł</th>
+                        <th>Data</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody id="archiveOutput"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let currentStoryId = null;
+        let currentParentTitle = null;
+
+        function showLoadingBar() {
+            const loadingBar = document.getElementById("loadingBar");
+            const loadingProgress = document.getElementById("loadingProgress");
+            loadingBar.style.display = "block";
+            loadingProgress.style.width = "0%";
+
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                loadingProgress.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    progress = 0;
+                }
+            }, 200);
+
+            return interval;
+        }
+
+        function hideLoadingBar(interval) {
+            clearInterval(interval);
+            const loadingBar = document.getElementById("loadingBar");
+            const loadingProgress = document.getElementById("loadingProgress");
+            loadingProgress.style.width = "100%";
+            setTimeout(() => {
+                loadingBar.style.display = "none";
+                loadingProgress.style.width = "0%";
+            }, 300);
+        }
+
+        function toggleStory() {
+            const storyOutput = document.getElementById("storyOutput");
+            const toggleBtn = storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)");
+            if (storyOutput.classList.contains("minimized")) {
+                storyOutput.classList.remove("minimized");
+                toggleBtn.textContent = "Zwiń";
+            } else {
+                storyOutput.classList.add("minimized");
+                toggleBtn.textContent = "Rozwiń";
+            }
+        }
+
+        function hideStory() {
+            const storyOutput = document.getElementById("storyOutput");
+            storyOutput.style.display = "none";
+            storyOutput.classList.add("minimized");
+            const toggleBtn = storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)");
+            toggleBtn.textContent = "Rozwiń";
+        }
+
+        async function generateStory() {
+            const age = document.getElementById("age").value;
+            const hero1_age = document.getElementById("hero1_age").value;
+            const hero2_age = document.getElementById("hero2_age").value;
+            const erotic_level = document.getElementById("erotic_level").value;
+            const setting = document.getElementById("setting").value;
+            const specific_location = document.getElementById("specific_location").value;
+            const genre = document.getElementById("genre").value;
+            const narration = document.getElementById("narration").value;
+            const mood = document.getElementById("mood").value;
+            const main_goal = document.getElementById("main_goal").value;
+            const focus = document.getElementById("focus").value;
+            const motifs = document.getElementById("motifs").value;
+
+            if (!age || !hero1_age || !hero2_age || !motifs) {
+                alert("Proszę wypełnić wszystkie wymagane pola (wiek odbiorców, wiek bohaterów, motywy).");
+                return;
+            }
+
+            const motifsArray = motifs.split(",").map(m => m.trim()).filter(m => m);
+            if (motifsArray.length < 3) {
+                alert("Proszę podać minimum 3 motywy.");
+                return;
+            }
+
+            const loadingInterval = showLoadingBar();
+
+            const response = await fetch('/generate_custom_story', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    age,
+                    hero1_age,
+                    hero2_age,
+                    erotic_level: parseInt(erotic_level),
+                    setting,
+                    specific_location,
+                    genre,
+                    narration,
+                    mood,
+                    main_goal,
+                    focus,
+                    motifs: motifsArray
+                })
+            });
+
+            hideLoadingBar(loadingInterval);
+
+            const data = await response.json();
+
+            const storyOutput = document.getElementById("storyOutput");
+            const chapterSection = document.getElementById("chapterSection");
+
+            if (response.ok) {
+                currentStoryId = data.story_id;
+                currentParentTitle = data.title;
+                storyOutput.textContent = `Tytuł: ${data.title}\n\n${data.story}`;
+                storyOutput.style.display = "block";
+                storyOutput.classList.remove("minimized");
+                storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)").textContent = "Zwiń";
+                chapterSection.style.display = "block";
+                loadArchive();
+            } else {
+                storyOutput.textContent = `Błąd: ${data.error}`;
+                storyOutput.style.display = "block";
+                storyOutput.classList.remove("minimized");
+                storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)").textContent = "Zwiń";
+                chapterSection.style.display = "none";
+            }
+        }
+
+        async function generateChapter() {
+            if (!currentStoryId) {
+                alert("Najpierw wygeneruj historię.");
+                return;
+            }
+
+            const chapter_pages = document.getElementById("chapter_pages").value;
+
+            if (!chapter_pages || chapter_pages < 1) {
+                alert("Proszę podać poprawną liczbę stron.");
+                return;
+            }
+
+            const loadingInterval = showLoadingBar();
+
+            const response = await fetch('/generate_chapter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    story_id: currentStoryId,
+                    chapter_pages,
+                    parent_title: currentParentTitle
+                })
+            });
+
+            hideLoadingBar(loadingInterval);
+
+            const data = await response.json();
+            const storyOutput = document.getElementById("storyOutput");
+
+            if (response.ok) {
+                storyOutput.textContent = `Tytuł: ${data.title}\n\n${data.story}`;
+                storyOutput.style.display = "block";
+                storyOutput.classList.remove("minimized");
+                storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)").textContent = "Zwiń";
+                loadArchive();
+            } else {
+                storyOutput.textContent = `Błąd: ${data.error}`;
+                storyOutput.style.display = "block";
+                storyOutput.classList.remove("minimized");
+                storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)").textContent = "Zwiń";
+            }
+        }
+
+        async function loadArchive() {
+            const response = await fetch('/get_archive', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            const archiveOutput = document.getElementById("archiveOutput");
+            archiveOutput.innerHTML = '';
+
+            if (response.ok && data.archive) {
+                data.archive.forEach(item => {
+                    const row = document.createElement('tr');
+                    const title = item.title || (item.is_chapter ? `Rozdział (${item.parent_title})` : 'Bez tytułu');
+                    row.innerHTML = `
+                        <td>${title}</td>
+                        <td>${item.timestamp}</td>
+                        <td><button onclick="viewStory('${item.title}', \`${item.story}\`, '${item.timestamp}')">Wyświetl</button></td>
+                    `;
+                    archiveOutput.appendChild(row);
+                });
+            } else {
+                archiveOutput.innerHTML = '<tr><td colspan="3">Brak zapisanych historii.</td></tr>';
+            }
+        }
+
+        function viewStory(title, story, timestamp) {
+            const storyOutput = document.getElementById("storyOutput");
+            const chapterSection = document.getElementById("chapterSection");
+            storyOutput.textContent = `Tytuł: ${title}\n\n${story}\n\nZapisano: ${timestamp}`;
+            storyOutput.style.display = "block";
+            storyOutput.classList.remove("minimized");
+            storyOutput.querySelector(".toggle-story-btn:not(.hide-story-btn)").textContent = "Zwiń";
+            chapterSection.style.display = "none";
+            currentStoryId = null;
+            currentParentTitle = null;
+        }
+
+        document.addEventListener('DOMContentLoaded', loadArchive);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9312c1532f51b0b2',t:'MTc0NDc5Njc4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
